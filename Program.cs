@@ -291,27 +291,27 @@ private static async Task GetTokenInfo()
 // Class to map JSON fields from Discord API response
 private class DiscordUser
 {
-    public string Id { get; set; }
-    public string Username { get; set; }
-    public string Avatar { get; set; }
-    public string Discriminator { get; set; }
+    public string? Id { get; set; }
+    public string? Username { get; set; }
+    public string? Avatar { get; set; }
+    public string? Discriminator { get; set; }
     public int PublicFlags { get; set; }
     public int Flags { get; set; }
     public string? Banner { get; set; }
     public int AccentColor { get; set; }
     public string? BannerColor { get; set; }
     public bool MfaEnabled { get; set; }
-    public string Locale { get; set; }
+    public string? Locale { get; set; }
     public int PremiumType { get; set; }
-    public string Email { get; set; }
+    public string? Email { get; set; }
     public bool Verified { get; set; }
     public string? Phone { get; set; }
     public bool NsfwAllowed { get; set; }
-    public string[] LinkedUsers { get; set; }
+    public string[] LinkedUsers { get; set; } = Array.Empty<string>();
     public int PurchasedFlags { get; set; }
-    public string Bio { get; set; }
-    public int[] AuthenticatorTypes { get; set; }
-    public string GlobalName { get; set; }
+    public string? Bio { get; set; }
+    public int[] AuthenticatorTypes { get; set; } = Array.Empty<int>();
+    public string? GlobalName { get; set; }
 }
 
     }
