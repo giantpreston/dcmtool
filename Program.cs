@@ -2,6 +2,7 @@
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
+using System.Text.Json;
 
 namespace DiscordMultiTool
 {
@@ -228,7 +229,7 @@ private static void DisplayMenu()
                 Console.WriteLine($"\nFailed to delete webhook: {response.StatusCode}");
             }
         }
-        private static async Task GetTokenInfo()
+private static async Task GetTokenInfo()
 {
     Console.Clear();
     Console.WriteLine("==== Token Information ====");
@@ -249,8 +250,32 @@ private static void DisplayMenu()
         var response = await client.GetAsync("https://discord.com/api/v9/users/@me");
         if (response.IsSuccessStatusCode)
         {
-            var json = await response.Content.ReadAsStringAsync();
-            Console.WriteLine($"\nToken Info: {json}");
+            var jsonResponse = await response.Content.ReadAsStringAsync();
+
+            // Parse JSON and extract data
+            var userInfo = JsonSerializer.Deserialize<DiscordUser>(jsonResponse);
+
+            // Display formatted information
+            Console.WriteLine("\n==== User Information ====");
+            Console.WriteLine($"ID: {userInfo.Id}");
+            Console.WriteLine($"Username: {userInfo.Username}");
+            Console.WriteLine($"Global Name: {userInfo.GlobalName}");
+            Console.WriteLine($"Discriminator: {userInfo.Discriminator}");
+            Console.WriteLine($"Avatar Hash: {userInfo.Avatar ?? "N/A"}");
+            Console.WriteLine($"Banner Hash: {userInfo.Banner ?? "N/A"}");
+            Console.WriteLine($"Accent Color: #{userInfo.AccentColor:X}");
+            Console.WriteLine($"Banner Color: {userInfo.BannerColor ?? "N/A"}");
+            Console.WriteLine($"MFA Enabled: {(userInfo.MfaEnabled ? "Yes" : "No")}");
+            Console.WriteLine($"Locale: {userInfo.Locale}");
+            Console.WriteLine($"Premium Type: {userInfo.PremiumType}");
+            Console.WriteLine($"Email: {userInfo.Email}");
+            Console.WriteLine($"Verified: {(userInfo.Verified ? "Yes" : "No")}");
+            Console.WriteLine($"Phone: {userInfo.Phone ?? "N/A"}");
+            Console.WriteLine($"NSFW Allowed: {(userInfo.NsfwAllowed ? "Yes" : "No")}");
+            Console.WriteLine($"Public Flags: {userInfo.PublicFlags}");
+            Console.WriteLine($"Purchased Flags: {userInfo.PurchasedFlags}");
+            Console.WriteLine($"Authenticator Types: {string.Join(", ", userInfo.AuthenticatorTypes ?? Array.Empty<int>())}");
+            Console.WriteLine($"Bio: {userInfo.Bio}");
         }
         else
         {
@@ -261,6 +286,32 @@ private static void DisplayMenu()
     {
         Console.WriteLine($"\nAn error occurred: {ex.Message}");
     }
+}
+
+// Class to map JSON fields from Discord API response
+private class DiscordUser
+{
+    public string Id { get; set; }
+    public string Username { get; set; }
+    public string Avatar { get; set; }
+    public string Discriminator { get; set; }
+    public int PublicFlags { get; set; }
+    public int Flags { get; set; }
+    public string? Banner { get; set; }
+    public int AccentColor { get; set; }
+    public string? BannerColor { get; set; }
+    public bool MfaEnabled { get; set; }
+    public string Locale { get; set; }
+    public int PremiumType { get; set; }
+    public string Email { get; set; }
+    public bool Verified { get; set; }
+    public string? Phone { get; set; }
+    public bool NsfwAllowed { get; set; }
+    public string[] LinkedUsers { get; set; }
+    public int PurchasedFlags { get; set; }
+    public string Bio { get; set; }
+    public int[] AuthenticatorTypes { get; set; }
+    public string GlobalName { get; set; }
 }
 
     }
