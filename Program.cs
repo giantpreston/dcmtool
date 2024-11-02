@@ -251,31 +251,29 @@ private static async Task GetTokenInfo()
         if (response.IsSuccessStatusCode)
         {
             var jsonResponse = await response.Content.ReadAsStringAsync();
-
-            // Parse JSON and extract data
             var userInfo = JsonSerializer.Deserialize<DiscordUser>(jsonResponse);
 
             // Display formatted information
             Console.WriteLine("\n==== User Information ====");
-            Console.WriteLine($"ID: {userInfo.Id}");
-            Console.WriteLine($"Username: {userInfo.Username}");
-            Console.WriteLine($"Global Name: {userInfo.GlobalName}");
-            Console.WriteLine($"Discriminator: {userInfo.Discriminator}");
-            Console.WriteLine($"Avatar Hash: {userInfo.Avatar ?? "N/A"}");
-            Console.WriteLine($"Banner Hash: {userInfo.Banner ?? "N/A"}");
-            Console.WriteLine($"Accent Color: #{userInfo.AccentColor:X}");
-            Console.WriteLine($"Banner Color: {userInfo.BannerColor ?? "N/A"}");
-            Console.WriteLine($"MFA Enabled: {(userInfo.MfaEnabled ? "Yes" : "No")}");
-            Console.WriteLine($"Locale: {userInfo.Locale}");
-            Console.WriteLine($"Premium Type: {userInfo.PremiumType}");
-            Console.WriteLine($"Email: {userInfo.Email}");
-            Console.WriteLine($"Verified: {(userInfo.Verified ? "Yes" : "No")}");
-            Console.WriteLine($"Phone: {userInfo.Phone ?? "N/A"}");
-            Console.WriteLine($"NSFW Allowed: {(userInfo.NsfwAllowed ? "Yes" : "No")}");
-            Console.WriteLine($"Public Flags: {userInfo.PublicFlags}");
-            Console.WriteLine($"Purchased Flags: {userInfo.PurchasedFlags}");
-            Console.WriteLine($"Authenticator Types: {string.Join(", ", userInfo.AuthenticatorTypes ?? Array.Empty<int>())}");
-            Console.WriteLine($"Bio: {userInfo.Bio}");
+            Console.WriteLine($"ID: {userInfo?.Id ?? "N/A"}");
+            Console.WriteLine($"Username: {userInfo?.Username ?? "N/A"}");
+            Console.WriteLine($"Global Name: {userInfo?.GlobalName ?? "N/A"}");
+            Console.WriteLine($"Discriminator: {userInfo?.Discriminator ?? "N/A"}");
+            Console.WriteLine($"Avatar Hash: {userInfo?.Avatar ?? "N/A"}");
+            Console.WriteLine($"Banner Hash: {userInfo?.Banner ?? "N/A"}");
+            Console.WriteLine($"Accent Color: #{userInfo?.AccentColor:X}");
+            Console.WriteLine($"Banner Color: {userInfo?.BannerColor ?? "N/A"}");
+            Console.WriteLine($"MFA Enabled: {(userInfo?.MfaEnabled == true ? "Yes" : "No")}");
+            Console.WriteLine($"Locale: {userInfo?.Locale ?? "N/A"}");
+            Console.WriteLine($"Premium Type: {userInfo?.PremiumType}");
+            Console.WriteLine($"Email: {userInfo?.Email ?? "N/A"}");
+            Console.WriteLine($"Verified: {(userInfo?.Verified == true ? "Yes" : "No")}");
+            Console.WriteLine($"Phone: {userInfo?.Phone ?? "N/A"}");
+            Console.WriteLine($"NSFW Allowed: {(userInfo?.NsfwAllowed == true ? "Yes" : "No")}");
+            Console.WriteLine($"Public Flags: {userInfo?.PublicFlags}");
+            Console.WriteLine($"Purchased Flags: {userInfo?.PurchasedFlags}");
+            Console.WriteLine($"Authenticator Types: {string.Join(", ", userInfo?.AuthenticatorTypes ?? Array.Empty<int>())}");
+            Console.WriteLine($"Bio: {userInfo?.Bio ?? "N/A"}");
         }
         else
         {
@@ -313,6 +311,5 @@ private class DiscordUser
     public int[] AuthenticatorTypes { get; set; } = Array.Empty<int>();
     public string? GlobalName { get; set; }
 }
-
     }
 }
