@@ -251,7 +251,15 @@ private static async Task GetTokenInfo()
         if (response.IsSuccessStatusCode)
         {
             var jsonResponse = await response.Content.ReadAsStringAsync();
-            var userInfo = JsonSerializer.Deserialize<DiscordUser>(jsonResponse);
+
+            // Log the raw JSON response for debugging
+            Console.WriteLine("\nRaw JSON Response:");
+            Console.WriteLine(jsonResponse);
+
+            var userInfo = JsonSerializer.Deserialize<DiscordUser>(jsonResponse, new JsonSerializerOptions
+            {
+                PropertyNameCaseInsensitive = true // Ensure property names are case insensitive
+            });
 
             // Display formatted information
             Console.WriteLine("\n==== User Information ====");
