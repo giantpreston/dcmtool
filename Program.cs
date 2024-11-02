@@ -29,6 +29,9 @@ namespace DiscordMultiTool
                         await DeleteWebhook();
                         break;
                     case "4":
+                        await GetTokenInfo();
+                        break;
+                    case "5":
                         Console.WriteLine("Exiting the program...");
                         return;
                     default:
@@ -88,7 +91,8 @@ private static void DisplayMenu()
     Console.WriteLine("1. Validate Token");
     Console.WriteLine("2. Send Message to Webhook");
     Console.WriteLine("3. Delete Webhook");
-    Console.WriteLine("4. Exit");
+    Console.WriteLine("4. Get Token Info");
+    Console.WriteLine("5. Exit");
     Console.Write("Please enter your choice: ");
 
     Console.ResetColor(); // Reset color after the menu
@@ -224,5 +228,40 @@ private static void DisplayMenu()
                 Console.WriteLine($"\nFailed to delete webhook: {response.StatusCode}");
             }
         }
+        private static async Task GetTokenInfo()
+{
+    Console.Clear();
+    Console.WriteLine("==== Token Information ====");
+    Console.Write("Enter your Discord user token: ");
+    var token = Console.ReadLine();
+
+    if (string.IsNullOrWhiteSpace(token))
+    {
+        Console.WriteLine("\nNo token provided.");
+        return;
+    }
+
+    using var client = new HttpClient();
+    client.DefaultRequestHeaders.Add("Authorization", token);
+
+    try
+    {
+        var response = await client.GetAsync("https://discord.com/api/v9/users/@me");
+        if (response.IsSuccessStatusCode)
+        {
+            var json = await response.Content.ReadAsStringAsync();
+            Console.WriteLine($"\nToken Info: {json}");
+        }
+        else
+        {
+            Console.WriteLine("\nFailed to retrieve token info.");
+        }
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine($"\nAn error occurred: {ex.Message}");
+    }
+}
+
     }
 }
