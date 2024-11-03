@@ -10,7 +10,7 @@ namespace DiscordMultiTool
     {
         static async Task Main(string[] args)
         {
-            Console.Title = "DCMTool v1.0.0 (by giantpreston)";
+            Console.Title = "DCMTool v1.0.1 (by giantpreston)";
 
             while (true)
             {
@@ -70,7 +70,7 @@ namespace DiscordMultiTool
                 @"    \|_______|\|_______|\|__|     \|__|    \|__|  \|_______|\|_______|\|_______|",
                 @"                                                                                ",
                 @"                                                                                ",
-                @"                                                 (version 1.0.0 by giantpreston)"
+                @"                                                 (version 1.0.1 by giantpreston)"
             };
 
             for (int i = 0; i < asciiArt.Length; i++)
