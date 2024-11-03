@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
@@ -45,60 +45,52 @@ namespace DiscordMultiTool
             }
         }
 
-private static void DisplayMenu()
-{
-    // Set gradient colors for ASCII art
-    ConsoleColor[] gradientColors = {
-        ConsoleColor.Cyan,
-        ConsoleColor.Cyan,
-        ConsoleColor.Cyan,
-        ConsoleColor.Cyan,
-        ConsoleColor.Blue,
-        ConsoleColor.Blue,
-        ConsoleColor.DarkBlue,
-        ConsoleColor.DarkBlue,
-        ConsoleColor.DarkBlue,
-        ConsoleColor.DarkBlue
-    };
+        private static void DisplayMenu()
+        {
+            ConsoleColor[] gradientColors = {
+                ConsoleColor.Cyan,
+                ConsoleColor.Cyan,
+                ConsoleColor.Cyan,
+                ConsoleColor.Cyan,
+                ConsoleColor.Blue,
+                ConsoleColor.Blue,
+                ConsoleColor.DarkBlue,
+                ConsoleColor.DarkBlue,
+                ConsoleColor.DarkBlue,
+                ConsoleColor.DarkBlue
+            };
 
-    // Display ASCII art with gradient
-    string[] asciiArt = new string[]
-    {
-        @" ________  ________  _____ ______   _________  ________  ________  ___          ",
-        @"|\   ___ \|\   ____\|\   _ \  _   \|\___   ___\\   __  \|\   __  \|\  \         ",
-        @"\ \  \_|\ \ \  \___|\ \  \\\__\ \  \|___ \  \_\ \  \|\  \ \  \|\  \ \  \        ",
-        @" \ \  \ \\ \ \  \    \ \  \\|__| \  \   \ \  \ \ \  \\\  \ \  \\\  \ \  \       ",
-        @"  \ \  \_\\ \ \  \____\ \  \    \ \  \   \ \  \ \ \  \\\  \ \  \\\  \ \  \____  ",
-        @"   \ \_______\ \_______\ \__\    \ \__\   \ \__\ \ \_______\ \_______\ \_______\",
-        @"    \|_______|\|_______|\|__|     \|__|    \|__|  \|_______|\|_______|\|_______|",
-        @"                                                                                ",
-        @"                                                                                ",
-        @"                                                 (version 1.0.0 by giantpreston)"
-    };
+            string[] asciiArt = new string[] {
+                @" ________  ________  _____ ______   _________  ________  ________  ___          ",
+                @"|\   ___ \|\   ____\|\   _ \  _   \|\___   ___\\   __  \|\   __  \|\  \         ",
+                @"\ \  \_|\ \ \  \___|\ \  \\\__\ \  \|___ \  \_\ \  \|\  \ \  \|\  \ \  \        ",
+                @" \ \  \ \\ \ \  \    \ \  \\|__| \  \   \ \  \ \ \  \\\  \ \  \\\  \ \  \       ",
+                @"  \ \  \_\\ \ \  \____\ \  \    \ \  \   \ \  \ \ \  \\\  \ \  \\\  \ \  \____  ",
+                @"   \ \_______\ \_______\ \__\    \ \__\   \ \__\ \ \_______\ \_______\ \_______\",
+                @"    \|_______|\|_______|\|__|     \|__|    \|__|  \|_______|\|_______|\|_______|",
+                @"                                                                                ",
+                @"                                                                                ",
+                @"                                                 (version 1.0.0 by giantpreston)"
+            };
 
-    // Print ASCII art with gradient
-    for (int i = 0; i < asciiArt.Length; i++)
-    {
-        Console.ForegroundColor = gradientColors[i % gradientColors.Length];
-        Console.WriteLine(asciiArt[i]);
-    }
+            for (int i = 0; i < asciiArt.Length; i++)
+            {
+                Console.ForegroundColor = gradientColors[i % gradientColors.Length];
+                Console.WriteLine(asciiArt[i]);
+            }
 
-    Console.ResetColor(); // Reset color for other menu items
-
-    // Print the rest of the menu with green color
-    Console.ForegroundColor = ConsoleColor.Green; // Set color for menu text
-    Console.WriteLine("==============================");
-    Console.WriteLine("Menu:");
-    Console.WriteLine("1. Validate Token");
-    Console.WriteLine("2. Send Message to Webhook");
-    Console.WriteLine("3. Delete Webhook");
-    Console.WriteLine("4. Get Token Info");
-    Console.WriteLine("5. Exit");
-    Console.Write("Please enter your choice: ");
-
-    Console.ResetColor(); // Reset color after the menu
-}
-
+            Console.ResetColor(); 
+            Console.ForegroundColor = ConsoleColor.Green;
+            Console.WriteLine("==============================");
+            Console.WriteLine("Menu:");
+            Console.WriteLine("1. Validate Token");
+            Console.WriteLine("2. Send Message to Webhook");
+            Console.WriteLine("3. Delete Webhook");
+            Console.WriteLine("4. Get Token Info");
+            Console.WriteLine("5. Exit");
+            Console.Write("Please enter your choice: ");
+            Console.ResetColor(); 
+        }
 
         private static async Task ValidateToken()
         {
@@ -152,7 +144,7 @@ private static void DisplayMenu()
             }
             finally
             {
-                Console.ResetColor(); // Reset the console color after displaying the message
+                Console.ResetColor(); 
             }
         }
 
@@ -180,7 +172,7 @@ private static void DisplayMenu()
 
             try
             {
-                await SendMs(messageContent, webhookUrl); // Updated to await
+                await SendMs(messageContent, webhookUrl); 
                 Console.WriteLine("Message sent successfully.");
             }
             catch (Exception ex)
@@ -192,10 +184,8 @@ private static void DisplayMenu()
         private static async Task SendMs(string message, string webhook)
         {
             using var client = new HttpClient();
-
             string payload = "{\"content\": \"" + message + "\"}";
             var content = new StringContent(payload, Encoding.UTF8, "application/json");
-
             var response = await client.PostAsync(webhook, content);
 
             if (!response.IsSuccessStatusCode)
@@ -229,6 +219,7 @@ private static void DisplayMenu()
                 Console.WriteLine($"\nFailed to delete webhook: {response.StatusCode}");
             }
         }
+
 private static async Task GetTokenInfo()
 {
     Console.Clear();
@@ -251,73 +242,42 @@ private static async Task GetTokenInfo()
         if (response.IsSuccessStatusCode)
         {
             var jsonResponse = await response.Content.ReadAsStringAsync();
+        // Only uncomment these if you need the Raw JSON Response sent by the Discord API for debugging.
+            // Console.WriteLine("\nRaw JSON Response:");
+            // Console.WriteLine(jsonResponse);
 
-            // Log the raw JSON response for debugging
-            Console.WriteLine("\nRaw JSON Response:");
-            Console.WriteLine(jsonResponse);
+            // Parse the JSON directly
+            using var jsonDoc = JsonDocument.Parse(jsonResponse);
+            var root = jsonDoc.RootElement;
 
-            var userInfo = JsonSerializer.Deserialize<DiscordUser>(jsonResponse, new JsonSerializerOptions
-            {
-                PropertyNameCaseInsensitive = true // Ensure property names are case insensitive
-            });
-
-            // Display formatted information
             Console.WriteLine("\n==== User Information ====");
-            Console.WriteLine($"ID: {userInfo?.Id ?? "N/A"}");
-            Console.WriteLine($"Username: {userInfo?.Username ?? "N/A"}");
-            Console.WriteLine($"Global Name: {userInfo?.GlobalName ?? "N/A"}");
-            Console.WriteLine($"Discriminator: {userInfo?.Discriminator ?? "N/A"}");
-            Console.WriteLine($"Avatar Hash: {userInfo?.Avatar ?? "N/A"}");
-            Console.WriteLine($"Banner Hash: {userInfo?.Banner ?? "N/A"}");
-            Console.WriteLine($"Accent Color: #{userInfo?.AccentColor:X}");
-            Console.WriteLine($"Banner Color: {userInfo?.BannerColor ?? "N/A"}");
-            Console.WriteLine($"MFA Enabled: {(userInfo?.MfaEnabled == true ? "Yes" : "No")}");
-            Console.WriteLine($"Locale: {userInfo?.Locale ?? "N/A"}");
-            Console.WriteLine($"Premium Type: {userInfo?.PremiumType}");
-            Console.WriteLine($"Email: {userInfo?.Email ?? "N/A"}");
-            Console.WriteLine($"Verified: {(userInfo?.Verified == true ? "Yes" : "No")}");
-            Console.WriteLine($"Phone: {userInfo?.Phone ?? "N/A"}");
-            Console.WriteLine($"NSFW Allowed: {(userInfo?.NsfwAllowed == true ? "Yes" : "No")}");
-            Console.WriteLine($"Public Flags: {userInfo?.PublicFlags}");
-            Console.WriteLine($"Purchased Flags: {userInfo?.PurchasedFlags}");
-            Console.WriteLine($"Authenticator Types: {string.Join(", ", userInfo?.AuthenticatorTypes ?? Array.Empty<int>())}");
-            Console.WriteLine($"Bio: {userInfo?.Bio ?? "N/A"}");
+            Console.WriteLine($"ID: {root.GetProperty("id").GetString()}");
+            Console.WriteLine($"Username: {root.GetProperty("username").GetString()}");
+            Console.WriteLine($"Global Name: {root.GetProperty("global_name").GetString()}");
+            Console.WriteLine($"Discriminator: {root.GetProperty("discriminator").GetString()}");
+            Console.WriteLine($"Avatar Hash: {root.GetProperty("avatar").GetString()}");
+            Console.WriteLine($"Banner Hash: {root.GetProperty("banner").GetString()}");
+            Console.WriteLine($"Accent Color: {(root.TryGetProperty("accent_color", out var accentColor) ? $"#{accentColor.GetInt32():X6}" : "N/A")}");
+            Console.WriteLine($"Banner Color: {root.GetProperty("banner_color").GetString()}");
+            Console.WriteLine($"MFA Enabled: {root.GetProperty("mfa_enabled").GetBoolean()}");
+            Console.WriteLine($"Locale: {root.GetProperty("locale").GetString()}");
+            Console.WriteLine($"Premium Type: {root.GetProperty("premium_type").GetInt32()}");
+            Console.WriteLine($"Email: {root.GetProperty("email").GetString()}");
+            Console.WriteLine($"Verified: {root.GetProperty("verified").GetBoolean()}");
+            Console.WriteLine($"Phone: {root.GetProperty("phone").GetString()}");
+            Console.WriteLine($"NSFW Allowed: {root.GetProperty("nsfw_allowed").GetBoolean()}");
+            Console.WriteLine($"Bio: {root.GetProperty("bio").GetString()}");
+            Console.WriteLine($"Authenticator Types: {string.Join(", ", root.GetProperty("authenticator_types").EnumerateArray().Select(x => x.GetInt32().ToString()))}");
         }
         else
         {
-            Console.WriteLine("\nFailed to retrieve token info.");
+            Console.WriteLine($"\nFailed to retrieve token info: {response.StatusCode}");
         }
     }
     catch (Exception ex)
     {
-        Console.WriteLine($"\nAn error occurred: {ex.Message}");
+        Console.WriteLine($"\nAn error occurred while retrieving token info: {ex.Message}");
     }
-}
-
-// Class to map JSON fields from Discord API response
-private class DiscordUser
-{
-    public string? Id { get; set; }
-    public string? Username { get; set; }
-    public string? Avatar { get; set; }
-    public string? Discriminator { get; set; }
-    public int PublicFlags { get; set; }
-    public int Flags { get; set; }
-    public string? Banner { get; set; }
-    public int AccentColor { get; set; }
-    public string? BannerColor { get; set; }
-    public bool MfaEnabled { get; set; }
-    public string? Locale { get; set; }
-    public int PremiumType { get; set; }
-    public string? Email { get; set; }
-    public bool Verified { get; set; }
-    public string? Phone { get; set; }
-    public bool NsfwAllowed { get; set; }
-    public string[] LinkedUsers { get; set; } = Array.Empty<string>();
-    public int PurchasedFlags { get; set; }
-    public string? Bio { get; set; }
-    public int[] AuthenticatorTypes { get; set; } = Array.Empty<int>();
-    public string? GlobalName { get; set; }
 }
     }
 }
