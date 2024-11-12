@@ -1,8 +1,10 @@
 using System;
+using System.IO;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using System.Text.Json;
+using System.Linq;
 
 namespace DiscordMultiTool
 {
@@ -96,15 +98,42 @@ namespace DiscordMultiTool
         {
             Console.Clear();
             Console.WriteLine("==== Token Validation ====");
-            Console.Write("Enter your Discord user token: ");
-            var token = Console.ReadLine();
 
-            if (string.IsNullOrWhiteSpace(token))
+            // Batch Token Validation
+            string filePath = "tokens.txt";
+            if (File.Exists(filePath))
             {
-                Console.WriteLine("\nNo token provided.");
-                return;
-            }
+                var tokens = File.ReadAllLines(filePath);
+                var validTokens = new StringBuilder();
 
+                foreach (var token in tokens)
+                {
+                    if (string.IsNullOrWhiteSpace(token)) continue;
+                    string result = await ValidateSingleToken(token.Trim());
+                    if (result == "Good token")
+                    {
+                        validTokens.AppendLine(token.Trim());
+                    }
+                }
+
+                if (validTokens.Length > 0)
+                {
+                    File.WriteAllText("valid_tokens.txt", validTokens.ToString());
+                    Console.WriteLine("Valid tokens have been written to 'valid_tokens.txt'");
+                }
+                else
+                {
+                    Console.WriteLine("No valid tokens found.");
+                }
+            }
+            else
+            {
+                Console.WriteLine("No 'tokens.txt' file found in the current directory.");
+            }
+        }
+
+        private static async Task<string> ValidateSingleToken(string token)
+        {
             using var client = new HttpClient();
             client.DefaultRequestHeaders.Add("Authorization", token);
             client.DefaultRequestHeaders.Add("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/101.0.4951.41 Safari/537.36");
@@ -117,34 +146,20 @@ namespace DiscordMultiTool
                 switch (statusCode)
                 {
                     case 200:
-                        Console.WriteLine("\nGood token");
-                        Console.ForegroundColor = ConsoleColor.Green;
-                        break;
+                        return "Good token";
                     case 401:
-                        Console.WriteLine("\nBad token");
-                        Console.ForegroundColor = ConsoleColor.Red;
-                        break;
+                        return "Bad token";
                     case 403:
-                        Console.WriteLine("\nLocked token");
-                        Console.ForegroundColor = ConsoleColor.Yellow;
-                        break;
+                        return "Locked token";
                     case 429:
-                        Console.WriteLine("\nRate limited, slow down!");
-                        Console.ForegroundColor = ConsoleColor.Blue;
-                        break;
+                        return "Rate limited, slow down!";
                     default:
-                        Console.WriteLine($"\nUnknown error: {statusCode}");
-                        Console.ForegroundColor = ConsoleColor.Gray;
-                        break;
+                        return $"Unknown error: {statusCode}";
                 }
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"\nAn error occurred while validating the token: {ex.Message}");
-            }
-            finally
-            {
-                Console.ResetColor(); 
+                return $"Error occurred: {ex.Message}";
             }
         }
 
@@ -220,64 +235,54 @@ namespace DiscordMultiTool
             }
         }
 
-private static async Task GetTokenInfo()
-{
-    Console.Clear();
-    Console.WriteLine("==== Token Information ====");
-    Console.Write("Enter your Discord user token: ");
-    var token = Console.ReadLine();
-
-    if (string.IsNullOrWhiteSpace(token))
-    {
-        Console.WriteLine("\nNo token provided.");
-        return;
-    }
-
-    using var client = new HttpClient();
-    client.DefaultRequestHeaders.Add("Authorization", token);
-
-    try
-    {
-        var response = await client.GetAsync("https://discord.com/api/v9/users/@me");
-        if (response.IsSuccessStatusCode)
+        private static async Task GetTokenInfo()
         {
-            var jsonResponse = await response.Content.ReadAsStringAsync();
-        // Only uncomment these if you need the Raw JSON Response sent by the Discord API for debugging.
-            // Console.WriteLine("\nRaw JSON Response:");
-            // Console.WriteLine(jsonResponse);
+            Console.Clear();
+            Console.WriteLine("==== Token Information ====");
+            Console.Write("Enter your Discord user token: ");
+            var token = Console.ReadLine();
 
-            // Parse the JSON directly
-            using var jsonDoc = JsonDocument.Parse(jsonResponse);
-            var root = jsonDoc.RootElement;
+            if (string.IsNullOrWhiteSpace(token))
+            {
+                Console.WriteLine("\nNo token provided.");
+                return;
+            }
 
-            Console.WriteLine("\n==== User Information ====");
-            Console.WriteLine($"ID: {root.GetProperty("id").GetString()}");
-            Console.WriteLine($"Username: {root.GetProperty("username").GetString()}");
-            Console.WriteLine($"Global Name: {root.GetProperty("global_name").GetString()}");
-            Console.WriteLine($"Discriminator: {root.GetProperty("discriminator").GetString()}");
-            Console.WriteLine($"Avatar Hash: {root.GetProperty("avatar").GetString()}");
-            Console.WriteLine($"Banner Hash: {root.GetProperty("banner").GetString()}");
-            Console.WriteLine($"Accent Color: {(root.TryGetProperty("accent_color", out var accentColor) ? $"#{accentColor.GetInt32():X6}" : "N/A")}");
-            Console.WriteLine($"Banner Color: {root.GetProperty("banner_color").GetString()}");
-            Console.WriteLine($"MFA Enabled: {root.GetProperty("mfa_enabled").GetBoolean()}");
-            Console.WriteLine($"Locale: {root.GetProperty("locale").GetString()}");
-            Console.WriteLine($"Premium Type: {root.GetProperty("premium_type").GetInt32()}");
-            Console.WriteLine($"Email: {root.GetProperty("email").GetString()}");
-            Console.WriteLine($"Verified: {root.GetProperty("verified").GetBoolean()}");
-            Console.WriteLine($"Phone: {root.GetProperty("phone").GetString()}");
-            Console.WriteLine($"NSFW Allowed: {root.GetProperty("nsfw_allowed").GetBoolean()}");
-            Console.WriteLine($"Bio: {root.GetProperty("bio").GetString()}");
-            Console.WriteLine($"Authenticator Types: {string.Join(", ", root.GetProperty("authenticator_types").EnumerateArray().Select(x => x.GetInt32().ToString()))}");
+            using var client = new HttpClient();
+            client.DefaultRequestHeaders.Add("Authorization", token);
+
+            try
+            {
+                var response = await client.GetAsync("https://discord.com/api/v9/users/@me");
+                if (response.IsSuccessStatusCode)
+                {
+                    var jsonResponse = await response.Content.ReadAsStringAsync();
+                    // Only uncomment these if you need the Raw JSON Response sent by the Discord API for debugging.
+                    // Console.WriteLine("\nRaw JSON Response:");
+                    // Console.WriteLine(jsonResponse);
+
+                    // Parse the JSON directly
+                    using var jsonDoc = JsonDocument.Parse(jsonResponse);
+                    var root = jsonDoc.RootElement;
+
+                    Console.WriteLine("\n==== User Information ====");
+                    Console.WriteLine($"ID: {root.GetProperty("id").GetString()}");
+                    Console.WriteLine($"Username: {root.GetProperty("username").GetString()}");
+                    Console.WriteLine($"Global Name: {root.GetProperty("global_name").GetString()}");
+                    Console.WriteLine($"Discriminator: {root.GetProperty("discriminator").GetString()}");
+                    Console.WriteLine($"Avatar Hash: {root.GetProperty("avatar").GetString()}");
+                    Console.WriteLine($"Banner Hash: {root.GetProperty("banner").GetString()}");
+                    Console.WriteLine($"Email: {root.GetProperty("email").GetString()}");
+                }
+                else
+                {
+                    Console.WriteLine("\nFailed to fetch user info. Please ensure the token is valid.");
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"\nError occurred: {ex.Message}");
+            }
         }
-        else
-        {
-            Console.WriteLine($"\nFailed to retrieve token info: {response.StatusCode}");
-        }
-    }
-    catch (Exception ex)
-    {
-        Console.WriteLine($"\nAn error occurred while retrieving token info: {ex.Message}");
-    }
-}
     }
 }
